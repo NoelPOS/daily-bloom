@@ -25,14 +25,28 @@ export default function Popup({
     }));
   };
 
+  // const handleImageUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const imageUrl = URL.createObjectURL(file);
+  //     setNewChallenge((prevChallenge) => ({
+  //       ...prevChallenge,
+  //       challenge_img: imageUrl,
+  //     }));
+  //   }
+  // };
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setNewChallenge((prevChallenge) => ({
-        ...prevChallenge,
-        challenge_img: imageUrl,
-      }));
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Convert file to Base64
+      reader.onloadend = () => {
+        setNewChallenge((prevChallenge) => ({
+          ...prevChallenge,
+          challenge_img: reader.result, // Store Base64 string
+        }));
+      };
     }
   };
 
@@ -96,7 +110,7 @@ export default function Popup({
                 >
                   <div className="w-[70%] text-start">
                     {newChallenge.date_to_do
-                      ? format(newChallenge.date_to_do[0], "dd MMM yyyy")
+                      ? format(newChallenge.date_to_do, "dd MMM yyyy")
                       : "On these days"}
                   </div>
                   <CalendarIcon className="ml-2 h-6 w-6 text-mainPrimary" />

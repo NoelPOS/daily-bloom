@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -20,27 +20,27 @@ export const convertToBase64Client = (file) => {
 export const uploadToCloudinary = async (file) => {
   try {
     if (!file) return null;
-    
+
     // If we receive base64 data
-    if (typeof file === 'string' && file.startsWith('data:')) {
+    if (typeof file === "string" && file.startsWith("data:")) {
       const result = await cloudinary.uploader.upload(file, {
-        folder: 'habits'
+        folder: "habits",
       });
       return result.secure_url;
     }
-    
+
     // If we receive a buffer, convert it to base64
     if (Buffer.isBuffer(file)) {
-      const base64String = `data:image/jpeg;base64,${file.toString('base64')}`;
+      const base64String = `data:image/jpeg;base64,${file.toString("base64")}`;
       const result = await cloudinary.uploader.upload(base64String, {
-        folder: 'habits'
+        folder: "habits",
       });
       return result.secure_url;
     }
 
     return null;
   } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
+    console.error("Error uploading to Cloudinary:", error);
     throw error;
   }
 };
@@ -50,7 +50,7 @@ export const deleteImage = async (publicId) => {
     const result = await cloudinary.uploader.destroy(publicId);
     return result;
   } catch (error) {
-    console.error('Error deleting image:', error);
+    console.error("Error deleting image:", error);
     throw error;
   }
 };
