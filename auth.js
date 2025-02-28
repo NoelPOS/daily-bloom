@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import connectDB from "./src/lib/db";
-import User from './models/User'
+import User from "./models/User";
 import { compare } from "bcryptjs";
 
 export const authOptions = {
@@ -26,7 +26,9 @@ export const authOptions = {
           }
 
           await connectDB();
-          const user = await User.findOne({ email: credentials.email }).select("+password +role");
+          const user = await User.findOne({ email: credentials.email }).select(
+            "+password +role"
+          );
 
           if (!user || !user.password) {
             throw new Error("Invalid email or password");
@@ -88,25 +90,32 @@ export const authOptions = {
     signIn: async ({ user, account }) => {
       if (account?.provider === "google") {
         try {
-          const { email, name, image, id } = user;
+          const { email, name, image } = user;
           await connectDB();
-          const alreadyUser = await User.findOne({ email });
+          const existingUser = await User.findOne({ email });
 
-          if (!alreadyUser) {
-            await User.create({ email, name, image, authProviderId: id });
-          } else {
-            return true;
+          if (!existingUser) {
+            // Create a new user with necessary fields
+            await User.create({
+              email,
+              username: name.replace(/\s+/g, "").toLowerCase(), // generate a username
+              profilePicture: image,
+              password: Math.random().toString(36).slice(-8), // generate a random password
+              gender: "Prefer not to say",
+            });
           }
+          return true;
         } catch (error) {
-          throw new Error("Error while creating user");
+          console.error("Google sign-in error:", error);
+          throw new Error("Error processing Google sign-in");
         }
       }
 
       if (account?.provider === "credentials") {
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     },
   },
 };

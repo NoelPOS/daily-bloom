@@ -225,7 +225,10 @@ export default function LoginPage() {
             </div>
 
             <div className="flex justify-center items-center gap-6">
-              <button className="hover:opacity-90">
+              <button
+                className="hover:opacity-90"
+                onClick={() => signIn("google")}
+              >
                 <Image
                   src="/assets/images/auth/google.png"
                   alt="google"
