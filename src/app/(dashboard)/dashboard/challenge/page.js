@@ -71,8 +71,9 @@ export default function Challenge() {
   const [newChallenge, setNewChallenge] = useState({
     name: "",
     duration: "",
-    time_of_day: "",
-    days: null,
+    time: "",
+    time_period: "",
+    date_to_do: "",
     challenge_img: "",
     notification: false,
     user: session?.user?.id || "",
@@ -110,8 +111,10 @@ export default function Challenge() {
         const body = {
           name: newChallenge.name,
           duration: Number(newChallenge.duration),
-          time_of_day: "Morning",
-          date_to_do: new Date(newChallenge.days),
+          time: newChallenge.time,
+          time_period: newChallenge.time_period,
+          notification: newChallenge.notification,
+          date_to_do: newChallenge.date_to_do,
           user: session?.user?.id || "",
           challenge_img: newChallenge.challenge_img,
         };
@@ -198,7 +201,7 @@ export default function Challenge() {
             {challenges.map((challenge, index) => (
               <Link
                 href={{
-                  pathname: `/dashboard/challenge/${challenge.id}`,
+                  pathname: `/dashboard/challenge/${challenge._id}`,
                   query: { duration: challenge.duration, text: challenge.name },
                 }}
                 key={index}

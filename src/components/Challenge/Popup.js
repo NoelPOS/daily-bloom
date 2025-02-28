@@ -14,8 +14,9 @@ export default function Popup({
   newChallenge,
   setNewChallenge,
 }) {
-  const [selectedDates, setSelectedDates] = useState(null); // ✅ Always an array
+  // ✅ Always an array
   const [showCalendar, setShowCalendar] = useState(false);
+  console.log("newChallenge", newChallenge);
 
   const handleSwitchChange = (checked) => {
     setNewChallenge((prevChallenge) => ({
@@ -64,7 +65,10 @@ export default function Popup({
             required
           />
           <div className="flex gap-3">
-            <TimeDropdown />
+            <TimeDropdown
+              setNewChallenge={setNewChallenge}
+              newChallenge={newChallenge}
+            />
 
             <input
               type="number"
@@ -91,8 +95,8 @@ export default function Popup({
                   className="cursor-pointer border border-mainPrimary font-montserrat font-[500] text-[16px] text-[#868686] outline-none rounded-[10px] p-3 w-full tracking-wide flex justify-between items-center"
                 >
                   <div className="w-[70%] text-start">
-                    {selectedDates
-                      ? format(selectedDates, "MM/dd/yyyy")
+                    {newChallenge.date_to_do
+                      ? format(newChallenge.date_to_do[0], "dd MMM yyyy")
                       : "On these days"}
                   </div>
                   <CalendarIcon className="ml-2 h-6 w-6 text-mainPrimary" />
@@ -103,8 +107,14 @@ export default function Popup({
                   <div className="absolute mt-2 right-0 font-montserrat font-[500] text-[16px] text-[#868686] bg-backgroundPrimary shadow-inner rounded-[10px] p-2 border z-50">
                     <Calendar
                       mode="single"
-                      selected={selectedDates}
-                      onSelect={setSelectedDates}
+                      selected={newChallenge.date_to_do}
+                      onSelect={(date) => {
+                        setNewChallenge((prevChallenge) => ({
+                          ...prevChallenge,
+                          date_to_do: date,
+                        }));
+                        setShowCalendar(false);
+                      }}
                       required
                     />
                   </div>

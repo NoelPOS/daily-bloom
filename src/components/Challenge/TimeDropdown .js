@@ -1,21 +1,32 @@
 import { useState } from "react";
 import Image from "next/image";
 
-const TimeDropdown = () => {
+const TimeDropdown = ({ setNewChallenge, newChallenge }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedAMPM, setSelectedAMPM] = useState("AM");
   const [selectedHour, setSelectedHour] = useState("12");
   const [selectedMinute, setSelectedMinute] = useState("00");
+  const [selectedAMPM, setSelectedAMPM] = useState("AM");
 
   // Handle time selection
   const handleSelect = (value, type) => {
-    if (type === "hour") setSelectedHour(value);
-    if (type === "minute") setSelectedMinute(value);
+    if (type === "hour") {
+      setNewChallenge((prevChallenge) => ({
+        ...prevChallenge,
+        time: `${value}:${selectedMinute}`,
+        time_period: selectedAMPM,
+      }));
+      setSelectedHour(value);
+    }
   };
 
   // Toggle AM/PM
   const toggleAMPM = (currentValue) => {
+    console.log("currentValue", currentValue);
     setSelectedAMPM(currentValue);
+    setNewChallenge((prevChallenge) => ({
+      ...prevChallenge,
+      time_period: currentValue,
+    }));
   };
 
   const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString());

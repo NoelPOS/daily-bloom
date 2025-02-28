@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
-import Challenge from '../../../../../models/Challenge'
-import connectDB from '../../../../lib/db'
+import { NextResponse } from "next/server";
+import Challenge from "../../../../../models/Challenge";
+import connectDB from "../../../../lib/db";
 
 export async function POST(request) {
   try {
-    await connectDB()
-    const body = await request.json()
+    await connectDB();
+    const body = await request.json();
     const {
       name,
       duration,
@@ -15,7 +15,8 @@ export async function POST(request) {
       date_to_do,
       user,
       challenge_img,
-    } = body
+    } = body;
+    console.log(body);
     const challenge = new Challenge({
       name,
       duration,
@@ -25,11 +26,12 @@ export async function POST(request) {
       date_to_do,
       user,
       challenge_img,
-    })
-    await challenge.save()
-    return NextResponse.json(challenge, { status: 201 })
+    });
+    await challenge.save();
+    return NextResponse.json(challenge, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.log(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 

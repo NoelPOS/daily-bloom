@@ -3,20 +3,38 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { useParams } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Timer() {
+  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
   const searchParams = useSearchParams();
+
+  const params = useParams();
+  console.log("id", params.id);
+  const [challengeId, setChallengeId] = useState(params.id);
+
   const time = searchParams.get("duration");
   const Title = searchParams.get("text");
 
   const getInitialTimeInSeconds = (timeString) => {
     const minutes = parseInt(timeString.replace(/\D/g, ""), 10);
     return !isNaN(minutes) ? minutes * 60 : 0;
+  };
+
+  const completeChallenge = async (id) => {
+    try {
+      const response = await axios.put(`/api/challenges/complete/${id}`);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   useEffect(() => {
@@ -32,8 +50,10 @@ export default function Timer() {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft <= 0 && isRunning) {
+      completeChallenge(challengeId);
       alert("Time's up!");
       setIsRunning(false);
+      router.push("/dashboard/challenge");
     }
     return () => clearInterval(timer);
   }, [isRunning, timeLeft]);
