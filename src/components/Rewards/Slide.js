@@ -38,6 +38,7 @@ export function CarouselSize({ rewards, loading, setLoading }) {
       );
       setChunkedRewards(updatedRewards);
       toast.success("Reward claimed successfully");
+      window.location.reload();
       setLoading(false);
     } catch (error) {
       console.log(error);
