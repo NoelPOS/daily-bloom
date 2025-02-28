@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
+import axios from "axios";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -12,26 +13,48 @@ export default function ContactUs() {
     message: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post("/api/send", formData);
 
-    // Show success toast notification
-    toast.success("Message Sent Successfully! 🎉", {
-      duration: 2000,
-      style: {
-        backgroundColor: "#8778FB",
-        color: "#FFFFFF",
-        letterSpacing: "0.025rem",
-        borderRadius: "10px",
-        border: "none",
-        padding: "18px",
-        fontSize: "16px",
-        fontFamily: "Montserrat, sans-serif",
-      },
-    });
-
-    // Clear form after submission
-    setFormData({ firstName: "", lastName: "", email: "", message: "" });
+      // Clear the form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        message: "",
+      });
+      // Show success toast notification
+      toast.success("Message Sent Successfully! 🎉", {
+        duration: 2000,
+        style: {
+          backgroundColor: "#8778FB",
+          color: "#FFFFFF",
+          letterSpacing: "0.025rem",
+          borderRadius: "10px",
+          border: "none",
+          padding: "18px",
+          fontSize: "16px",
+          fontFamily: "Montserrat, sans-serif",
+        },
+      });
+    } catch (error) {
+      // Show error toast notification
+      toast.error("Failed to send message! 😢", {
+        duration: 2000,
+        style: {
+          backgroundColor: "#FF5C5C",
+          color: "#FFFFFF",
+          letterSpacing: "0.025rem",
+          borderRadius: "10px",
+          border: "none",
+          padding: "18px",
+          fontSize: "16px",
+          fontFamily: "Montserrat, sans-serif",
+        },
+      });
+    }
   };
 
   return (

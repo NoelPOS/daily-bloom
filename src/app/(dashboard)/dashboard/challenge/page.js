@@ -83,7 +83,7 @@ export default function Challenge() {
     setLoading(true);
     try {
       if (session?.user?.id) {
-        const url = "http://localhost:3000/api/challenges/" + session.user.id;
+        const url = "/api/challenges/" + session.user.id;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -106,7 +106,7 @@ export default function Challenge() {
       e.preventDefault();
 
       try {
-        const url = "http://localhost:3000/api/challenges/create";
+        const url = "/api/challenges/create";
         const body = {
           name: newChallenge.name,
           duration: Number(newChallenge.duration),
@@ -152,15 +152,12 @@ export default function Challenge() {
 
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/api/challenges/delete/${_id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`/api/challenges/delete/${_id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
