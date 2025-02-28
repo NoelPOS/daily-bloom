@@ -1,0 +1,9 @@
+{
+    "functions": {
+      "api/cron/notifications.js": {
+        "schedule": "0 */2 * * *"
+
+      }
+    }
+  }
+  
