@@ -1,42 +1,42 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import connectDB from "./src/lib/db";
-import User from "./models/User";
-import { compare } from "bcryptjs";
+import NextAuth from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
+import connectDB from './src/lib/db'
+import User from './models/User'
+import { compare } from 'bcryptjs'
 
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
     }),
 
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
 
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            throw new Error("Please provide both email & password");
+            throw new Error('Please provide both email & password')
           }
 
-          await connectDB();
+          await connectDB()
           const user = await User.findOne({ email: credentials.email }).select(
-            "+password +role"
-          );
+            '+password +role'
+          )
 
           if (!user || !user.password) {
-            throw new Error("Invalid email or password");
+            throw new Error('Invalid email or password')
           }
 
-          const isMatched = await compare(credentials.password, user.password);
+          const isMatched = await compare(credentials.password, user.password)
           if (!isMatched) {
-            throw new Error("Invalid email or password");
+            throw new Error('Invalid email or password')
           }
 
           return {
@@ -48,17 +48,17 @@ export const authOptions = {
             profile: user.profilePicture,
             streak: user.streak,
             points: user.points,
-          };
+          }
         } catch (error) {
-          console.error("Authorization error:", error);
-          throw error;
+          console.error('Authorization error:', error)
+          throw error
         }
       },
     }),
   ],
 
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
 
   callbacks: {
@@ -71,53 +71,53 @@ export const authOptions = {
           gender: token.gender,
           streak: token.streak,
           points: token.points,
-        };
+        }
       }
-      return session;
+      return session
     },
 
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.username = user.username;
-        token.gender = user.gender;
-        token.streak = user.streak;
-        token.points = user.points;
+        token.id = user.id
+        token.username = user.username
+        token.gender = user.gender
+        token.streak = user.streak
+        token.points = user.points
       }
-      return token;
+      return token
     },
 
     signIn: async ({ user, account }) => {
-      if (account?.provider === "google") {
+      if (account?.provider === 'google') {
         try {
-          const { email, name, image } = user;
-          await connectDB();
-          const existingUser = await User.findOne({ email });
+          const { email, name, image } = user
+          await connectDB()
+          const existingUser = await User.findOne({ email })
 
           if (!existingUser) {
             // Create a new user with necessary fields
             await User.create({
               email,
-              username: name.replace(/\s+/g, "").toLowerCase(), // generate a username
+              username: name.replace(/\s+/g, '').toLowerCase(), // generate a username
               profilePicture: image,
               password: Math.random().toString(36).slice(-8), // generate a random password
-              gender: "Prefer not to say",
-            });
+              gender: 'Prefer not to say',
+            })
           }
-          return true;
+          return true
         } catch (error) {
-          console.error("Google sign-in error:", error);
-          throw new Error("Error processing Google sign-in");
+          console.error('Google sign-in error:', error)
+          throw new Error('Error processing Google sign-in')
         }
       }
 
-      if (account?.provider === "credentials") {
-        return true;
+      if (account?.provider === 'credentials') {
+        return true
       }
 
-      return false;
+      return false
     },
   },
-};
+}
 
-export const { signIn, signOut, auth } = NextAuth(authOptions);
+export const { signIn, signOut, auth } = NextAuth(authOptions)
